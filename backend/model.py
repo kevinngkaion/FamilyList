@@ -1,47 +1,120 @@
-from typing import Annotated
+from typing import Annotated, List, Optional
 from bson import ObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from serializer import PydanticObjectId
 
-class Todo(BaseModel):
+class User(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
-    title: str
-    description: str
+    username: str
+    email: EmailStr
+    fname: str
+    lname: str
+    is_active: bool = True
+
     class Config:
         populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
         json_schema_extra = {
             "example": {
-                "title": "Task 1",
-                "description": "Feed the dogs"
+                "username": "john_doe",
+                "email": "johndoe@gmail.com",
+                "fname": "John",
+                "lname": "Doe",
+                "is_active": "true"
             }
         }
         
-class CreateTodo(BaseModel):
-    title: str
-    description: str
-        
-        
-    # # id: Annotated[ObjectId, ObjectIdPydanticAnnotation(alias="_id")]
-    # title: str
-    # description: str
+class CreateUser(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    fname: str
+    lname: str
+    is_active: bool = True
     
-
-
-# kevin = Todo(id="", title="Kevin", description="Name")
-# print(kevin)
-# class Model(BaseModel):
-#     id: Annotated[ObjectId, ObjectIdPydanticAnnotation]
-#     name: str = "Kevin"
-
-# kevin = Model(id='64b7abdecf2160b649ab6085')
-# print(type(kevin.id))
-# print(Model(id='64b7abdecf2160b649ab6085').model_dump_json())
-# print(Model(id=ObjectId()))
-# print(Model.model_json_schema())
-# try:
-#     print(Model(id='foobar'))  # will error
-# except Exception as error:
-#     print(error)
+class UpdateUser(BaseModel):
+    username: str
+    email: EmailStr
+    fname: str
+    lname: str
+    is_active: bool = True
     
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    user_id: str or None = None
+    
+class UserInDB(User):
+    hashed_password: str
+    
+class Group(BaseModel):
+    id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
+    name: str
+    admin: PydanticObjectId
+    users: List[PydanticObjectId]
+    
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        json_schema_extra = {
+            "example": {
+                "name": "Wu Tang Clan",
+                "admin": "id#1",
+                "users": [
+                    'id#1',
+                    'id#2'
+                ]
+            }
+        }
+        
+class CreateGroup(BaseModel):
+    name: str
+    admin: PydanticObjectId
+    users: List[PydanticObjectId]
+    
+class Item(BaseModel):
+    name: str
+    description: Optional[str]
+    quantity: int = 1
+    is_purchased: bool = False
+    
+class GroupList(BaseModel):
+    id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
+    name: str
+    group: PydanticObjectId
+    items: List[Item]
+    
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        json_schema_extra = {
+            "example": {
+                "name": "Wu Tang Clan",
+                "admin": "id#1",
+                "users": [
+                    'id#1',
+                    'id#2'
+                ]
+            }
+        }
+        
+class CreateGroupList(BaseModel):
+    name: str
+    group: PydanticObjectId
+    items: List[Item]
+    
+class UserLogin(BaseModel):
+    username: str
+    password: str
+    class Config:
+        json_schema_extra = {
+            "Login Demo": {
+                "username": "johndoe",
+                "password": "letmein123"
+            }
+        }
