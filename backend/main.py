@@ -1,6 +1,6 @@
 from typing import Union
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from bson import ObjectId
@@ -11,6 +11,11 @@ from model import UserLogin
 from config import ALLOWED_ORIGINS
 
 from auth.auth import router, get_current_active_user
+
+from datetime import timedelta, datetime, timezone
+
+
+import json
 
 app = FastAPI()
 app.include_router(router)
@@ -30,9 +35,13 @@ def read_root(user: User = Depends(get_current_active_user)):
     return {"Name": "Kevin Ngkaion"}
 
 @app.get("/user", tags=["user"])
-async def get_users(user: User = Depends(get_current_active_user)):
-    response = await fetch_all("user")
-    return response
+async def get_users(response:Response, request:Request):
+    data = await fetch_all("user")
+    # response = Response(content=data)
+    response.set_cookie(key="token", value="TestToken", httponly=True, secure=False, samesite="None")
+    response.set_cookie(key="name", value="Kevin", httponly=False, secure=False, samesite="None")
+    print(request.cookies.get("token"))
+    return data
 
 @app.get("/user/{id}", response_model=User, tags=["user"])
 async def get_user_by_id(id: str, user: User = Depends(get_current_active_user)):

@@ -3,6 +3,7 @@ import time
 from jose import jwt, JWTError
 from config import JWT_ALGORITHM, JWT_SECRET
 from datetime import timedelta, datetime
+from fastapi import HTTPException, status
 # This function signs the JWT string
 def create_access_token(username:str, uid: str, expires_delta: timedelta or None = None):
     if expires_delta:
