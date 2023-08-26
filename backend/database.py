@@ -36,6 +36,12 @@ async def create(collection, document):
 
 async def update(collection, id, data):
     obj_id = ObjectId(id)
+    items = data.items
+    updated_items = []
+    for item in items:
+        updated_items.append(dict(item))
+    data.items = updated_items
+    print(data)
     await database[collection].update_one({"_id":obj_id}, {"$set": dict(data)})
     document = await database[collection].find_one({"_id":obj_id})
     return document
