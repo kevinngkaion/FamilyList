@@ -60,7 +60,7 @@ footer {
 }
 
 /* List Items */
-.item {
+.ListItem {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -69,11 +69,11 @@ footer {
   background-color: #a0a0a0;
 }
 
-.item:first-child{
+.ListItem:first-child{
   margin: 0;
 }
 
-.item input[type="checkbox"] {
+.ListItem input[type="checkbox"] {
   text-align: center;
   width: 1.5rem;
   width: 35px;
@@ -86,16 +86,21 @@ footer {
   accent-color: var(--secondary);
 }
 
-.item input[type="checkbox"]:focus + .item-info {
+.ListItem input[type="checkbox"]:focus + .ItemInfo {
   text-decoration: underline;
 }
 
-.item > .item-info {
+.ItemInfo {
   font-size: 1rem;
   flex-grow: 1;
 }
 
-.item svg{
+.ItemInfo .item-name {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.ListItem svg{
   width: 35px;
   min-width: 35px;
   height: 30px;
@@ -103,7 +108,7 @@ footer {
   cursor: pointer;
 }
 
-.item svg:focus, .item svg:hover{
+.ListItem svg:focus, .ListItem svg:hover{
   color: red;
   outline: none;
 }

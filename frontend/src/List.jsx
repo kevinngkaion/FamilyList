@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useOutletContext} from 'react-router-dom';
-import { FaTrashCan } from "react-icons/fa6";
 import api from './api/axios'
+import ListItem from './components/ListItem';
 
 const List = () => {
   const [list, setList] = useState([]);
@@ -54,15 +54,7 @@ const List = () => {
       <h2>{list.name}</h2>
       <ul className='"container'>
         {listItems.map((item, index) => (
-          <li className="item" key={index}>
-            <input type="checkbox" onChange={()=>handleCheck(item.name)} checked={item.is_purchased}/>
-            <div className="item-info">
-              <div>{item.name}</div>
-              <div>{item.description}</div>
-              <div>{item.quantity}</div>
-            </div>
-            <FaTrashCan></FaTrashCan>
-          </li>
+          <ListItem item={item} index={index} handleCheck={handleCheck}/>
         ))}
       </ul>
     </main>
