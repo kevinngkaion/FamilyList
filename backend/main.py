@@ -13,7 +13,8 @@ from config import ALLOWED_ORIGINS
 from auth.auth import router, get_current_active_user
 
 from datetime import timedelta, datetime, timezone
-
+import asyncio
+from pprint import pprint
 
 import json
 
@@ -103,11 +104,42 @@ async def get_grouplists():
     response = await fetch_all('grouplist')
     return response
 
+def create_base_user(user):
+    if user['_id'] and user['fname'] and user['lname']:
+        return BaseUser(id=user['_id'], fname=user['fname'], lname=user['lname'])
+    return None
+
 @app.get("/grouplist/{id}", response_model=GroupList, tags=["group list"])
 async def get_grouplist_by_id(id: str):
-    response = await fetch_one('grouplist', id)
-    if response:
-        return response
+# This path will get the grouplist from the db and convert all the ids for the group and members into their appropriate objects. It returns the json object with the complete details of the grouplist.
+    grouplist = await fetch_one('grouplist', id)
+    if grouplist:
+        group_id = grouplist['group']
+        group = await fetch_one('group', group_id)
+        if group:
+            #Get the ids of the group admin and members
+            admin_id = group['admin']
+            member_ids = group['members']
+            
+            #fetch_tasks is a list of the async tasks that need to be run.
+            fetch_tasks = [fetch_one('user', member_id) for member_id in member_ids]
+            
+            #convert the admin to a base user in order to return meaningful information
+            admin = create_base_user(await fetch_one('user', admin_id))
+            
+            #asyncio gather will wait for all the tasks in the fetch_tasks list to complete before assigning to members_list
+            members_list = await asyncio.gather(*fetch_tasks)
+            members = [create_base_user(member) for member in members_list]
+            
+            #set the group's info to be the meaningful Object Models
+            group['admin'] = admin
+            group['members'] = members
+        else:
+            raise HTTPException(404, f"The group who owns this list could not be found")
+        
+        # Once we've finished with group, set the group for grouplist to be a meaningful object model
+        grouplist['group'] = group
+        return grouplist
     raise HTTPException(404, f"there is no grouplist with this ID {id}")
 
 @app.post("/grouplist", response_model=GroupList, tags=["group list"])

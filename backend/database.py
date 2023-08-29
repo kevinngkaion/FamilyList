@@ -1,6 +1,7 @@
 from config import DB_CONNECTION_STRING
 from model import *
 from bson import ObjectId
+import asyncio
 
 # MongoDB driver
 import motor.motor_asyncio
@@ -11,6 +12,27 @@ database = client.TodoList
 async def fetch_one(collection, id):
     obj_id = ObjectId(id)
     document = await database[collection].find_one({"_id": obj_id})
+    return document
+
+async def fetch_base_user(user_id):
+    user = await database['user'].find_one({"_id": user_id})
+    if user:
+        base_user = BaseUser(id=user['_id'], fname=user['fname'], lname=user['lname'])
+        return base_user;
+    return None
+
+async def fetch_grouplist(id):
+    obj_id = ObjectId(id)
+    document = await database['grouplist'].find_one({"_id": obj_id})
+    group_id = ObjectId(document['group'])
+    group = await database['group'].find_one({"_id": group_id})
+    admin_id = ObjectId(group['admin'])
+    member_ids = [ObjectId(member_id) for member_id in group['members']]
+    fetch_tasks = [fetch_base_user(member_id) for member_id in member_ids]
+    group['admin'] = await fetch_base_user(admin_id)
+    group['members'] = await asyncio.gather(*fetch_tasks)
+    
+    document['group'] = group
     return document
 
 async def fetch_user(username):

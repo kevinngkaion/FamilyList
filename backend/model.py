@@ -1,16 +1,22 @@
-from typing import Annotated, List, Optional
+from typing import Annotated, List, Optional, Union
 from bson import ObjectId
 from pydantic import BaseModel, Field, EmailStr
 from serializer import PydanticObjectId
 
-class User(BaseModel):
+class BaseUser(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
-    username: str
-    email: EmailStr
     fname: str
     lname: str
+        
+class UpdateUser(BaseUser):
+    username: str
+    email: EmailStr
     is_active: bool = True
+    
+class CreateUser(UpdateUser):
+    password: str
 
+class User(UpdateUser):
     class Config:
         populate_by_name = True
         arbitrary_types_allowed = True
@@ -24,21 +30,7 @@ class User(BaseModel):
                 "is_active": "true"
             }
         }
-        
-class CreateUser(BaseModel):
-    username: str
-    email: EmailStr
-    password: str
-    fname: str
-    lname: str
-    is_active: bool = True
-    
-class UpdateUser(BaseModel):
-    username: str
-    email: EmailStr
-    fname: str
-    lname: str
-    is_active: bool = True
+
     
 class Token(BaseModel):
     access_token: str
@@ -53,8 +45,8 @@ class UserInDB(User):
 class Group(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     name: str
-    admin: PydanticObjectId
-    users: List[PydanticObjectId]
+    admin: Union[BaseUser, PydanticObjectId]
+    members: Union[List[BaseUser], List[PydanticObjectId]]
     
     class Config:
         populate_by_name = True
@@ -64,7 +56,7 @@ class Group(BaseModel):
             "example": {
                 "name": "Wu Tang Clan",
                 "admin": "id#1",
-                "users": [
+                "members": [
                     'id#1',
                     'id#2'
                 ]
@@ -74,7 +66,7 @@ class Group(BaseModel):
 class CreateGroup(BaseModel):
     name: str
     admin: PydanticObjectId
-    users: List[PydanticObjectId]
+    members: List[PydanticObjectId]
     
 class Item(BaseModel):
     name: str
@@ -85,7 +77,7 @@ class Item(BaseModel):
 class GroupList(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     name: str
-    group: PydanticObjectId
+    group: Union[Group, str]
     items: List[Item]
     
     class Config:
