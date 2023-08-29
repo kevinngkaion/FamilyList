@@ -1,12 +1,13 @@
 import {useEffect, useState} from 'react';
-import {useOutletContext} from 'react-router-dom';
+import {isRouteErrorResponse, useOutletContext} from 'react-router-dom';
 import api from './api/axios'
 import ListItem from './components/ListItem';
 
 const List = () => {
   const [list, setList] = useState([]);
   const [listItems, setListItems] = useState([]);
-  const [apiFetch] = useOutletContext();
+  const [targetItem, setTargetItem] = useState();
+  const [apiFetch, apiPut] = useOutletContext();
   const [isUpdated, setIsUpdated] = useState(false);
 
   useEffect (() => {
@@ -18,32 +19,25 @@ const List = () => {
     fetchData();
   }, [])
 
-  const apiPut = async(path, data) => {
-    try{
-      const response = await api.put(path, data);
-      return response;
-    }catch(err){
-      console.log(err);
-    }
-  }
-
   useEffect(() => {
     if (isUpdated) {
-      const data = {
-        "name": list.name,
-        "group": list.group,
-        "items": list.items
-      }
-      console.log(data)
+      const data = targetItem
       apiPut(`/grouplist/${list._id}`, data)
     }
     setIsUpdated(false);
-  }, [isUpdated])
+  }, [isUpdated, targetItem])
 
   const handleCheck = (name) => {
-    const items = listItems.map((item) => item.name === name ? {...item, is_purchased: !item.is_purchased} : item);
-
+    const items = listItems.map( (item) => {
+      if (item.name === name){
+        return {...item, is_purchased: !item.is_purchased}
+      } else {
+        return item;
+      }
+    });
+    const targetItem = items.find((item) => item.name === name)
     const updatedList = {...list, items: items}
+    setTargetItem(targetItem)
     setList(updatedList)
     setListItems(items)
     setIsUpdated(true)

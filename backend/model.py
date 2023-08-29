@@ -74,6 +74,9 @@ class Item(BaseModel):
     quantity: int = 1
     is_purchased: bool = False
     
+class ListNameUpdate(BaseModel):
+    name: str
+    
 class GroupList(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     name: str

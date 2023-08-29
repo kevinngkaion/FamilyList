@@ -9,10 +9,10 @@ const Nav = () => {
           <Link to={'home'}>Home</Link>
         </li>
         <li className="nav-item">
-          <Link to={'list'}>List</Link>
+          <Link to={'lists'}>List</Link>
         </li>
         <li className="nav-item">
-          <Link to={'group'}>Group</Link>
+          <Link to={'groups'}>Group</Link>
         </li>
         <li className="nav-item">
           <Link to={'user'}>User</Link>

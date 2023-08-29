@@ -52,3 +52,24 @@ async def remove(collection, id):
     obj_id = ObjectId(id)
     response = await database[collection].delete_one({"_id":obj_id})
     return True
+
+async def update_list(id, data):
+    collection = database['grouplist']
+    obj_id = ObjectId(id)
+    filter_criteria = {"_id": obj_id}
+    array_filters = None
+    if isinstance(data, CreateGroupList):
+        updated_items = []
+        for item in data.items:
+            updated_items.append(dict(item))
+        data.items = updated_items
+        update_operation = {"$set": dict(data)}
+    elif isinstance(data, Item):
+        update_operation = {"$set": {"items.$[elem]": dict(data)}}
+        array_filters = [{"elem.name": data.name}]
+    elif isinstance(data, ListNameUpdate):
+        update_operation = {"$set": {"name": data.name}}
+    await collection.update_one(filter_criteria, update_operation, array_filters=array_filters)
+    document = await collection.find_one({"_id": obj_id})
+    return document
+    

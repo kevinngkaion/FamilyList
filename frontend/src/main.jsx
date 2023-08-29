@@ -9,6 +9,7 @@ import User from './User.jsx'
 import Home from './Home.jsx'
 import Group from './Group.jsx'
 import List from './List.jsx'
+import Lists from './Lists.jsx'
 
 const router = createBrowserRouter([
   {
@@ -26,14 +27,14 @@ const router = createBrowserRouter([
       },
       {
         path: "home",
-        element: <Home/>,
+        element: <Lists/>,
       },
       {
-        path: "group",
+        path: "groups",
         element: <Group/>,
       },
       {
-        path: "List",
+        path: "lists",
         element: <List/>,
       }
     ]

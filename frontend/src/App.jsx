@@ -20,12 +20,21 @@ function App() {
     }
   }
 
+  const apiPut = async(path, data) => {
+    try{
+      const response = await api.put(path, data);
+      return response;
+    }catch(err){
+      console.log(err);
+    }
+  }
+
 
   return (
     <div className="App">
       <Header />
       <Nav />
-      <Outlet context={[apiFetch]}/>
+      <Outlet context={[apiFetch, apiPut]}/>
       <Footer />
     </div>
   )
