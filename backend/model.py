@@ -77,7 +77,7 @@ class Item(BaseModel):
 class GroupList(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     name: str
-    group: Union[Group, str]
+    group: Union[Group, PydanticObjectId]
     items: List[Item]
     
     class Config:
