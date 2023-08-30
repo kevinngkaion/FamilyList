@@ -34,8 +34,12 @@ const router = createBrowserRouter([
         element: <Group/>,
       },
       {
-        path: "lists",
+        path: "lists/:listID",
         element: <List/>,
+      },
+      {
+        path: "lists",
+        element: <Lists/>,
       }
     ]
   },

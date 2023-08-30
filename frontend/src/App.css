@@ -112,3 +112,22 @@ footer {
   color: red;
   outline: none;
 }
+
+/* Clickable Row*/
+.ClickableRow {
+  margin: 0.25rem auto;
+  max-width: 428px;
+  list-style: none;
+}
+.ClickableRow button{
+  background-color: var(--light);
+  border: solid 2px black;
+  width: 100%;
+  padding: 1rem;
+}
+
+.ClickableRow button:hover {
+  background-color: var(--secondary-light);
+  color: var(--light);
+  cursor: pointer;
+}

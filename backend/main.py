@@ -158,12 +158,31 @@ async def create_grouplist(grouplist: CreateGroupList):
         return response
     raise HTTPException(400, "Something went wrong / Bad request")
 
+@app.post("/grouplist/{id}", response_model=GroupList, tags=["group list"])
+async def insert_item_to_grouplist(id:str, data: Item):
+    response = await update_list(id, data)
+    if response:
+        return response
+    raise HTTPException(400, f"Something went wrong. Item was not inserted into the list")
+
 @app.put("/grouplist/{id}", response_model=GroupList, tags=["group list"])
 async def put_grouplist(id:str, data: Union[CreateGroupList, Item, ListNameUpdate]):
     response = await update_list(id, data)
     if response:
         return response
     raise HTTPException(404, f"there is no grouplist with this ID {id}")
+
+@app.delete("/grouplist/{id}/{name}", response_model=GroupList, tags=["group list"])
+async def delete_item_from_grouplist(id:str, name:str):
+    grouplist = await fetch_one('grouplist', id)
+    items = grouplist['items']
+    updated_items = [item for item in items if item['name'] != name]
+    grouplist['items'] = updated_items
+    updated_grouplist = CreateGroupList(**grouplist)
+    response = await update_list(id, updated_grouplist)
+    if response:
+        return response
+    raise HTTPException(400, f"There was an error deleting the item from the list")
 
 @app.delete("/grouplist/{id}", tags=["group list"])
 async def delete_grouplist(id:str):

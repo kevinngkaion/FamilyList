@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import { useOutletContext } from "react-router-dom";
+import ListComponent from "./components/ListComponent";
 
 const Lists = () => {
     const [lists, setLists] = useState([]);
@@ -18,20 +19,10 @@ const Lists = () => {
         // This effect watches for changes in the 'lists' state variable
         // console.log(lists);
       }, [lists]); // Include 'lists' as a dependency
-
+    
     return (
     <main className="Lists">
-        <h2>Your Lists</h2>
-        <br />
-        {lists.map((list)=>{
-            return (
-            <div>
-                <p>{list.name}</p>
-                <p>{list.group.name}</p>
-                <br />
-            </div>
-            )
-        })}
+        <ListComponent lists={lists}/>
     </main>
     )
 

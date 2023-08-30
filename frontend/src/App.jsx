@@ -8,9 +8,9 @@ import api from './api/axios'
 
 
 function App() {
-  const apiFetch = async(url) => {
+  const apiFetch = async(path) => {
     try {
-      const response = await api.get("/" + url);
+      const response = await api.get("/" + path);
       // console.log("Fetching...")
       // console.log(response);
       // console.log("Done Fetching");
@@ -29,12 +29,30 @@ function App() {
     }
   }
 
+  const apiDelete = async(path) => {
+    try{
+      const response = await api.delete(path);
+      return response;
+    }catch(err){
+      console.log(err);
+    }
+  }
+
+  const apiPost = async(path, data) => {
+    try{
+      const response = await api.post(path, data);
+      return response;
+    }catch(err){
+      console.log(err);
+    }
+  }
+
 
   return (
     <div className="App">
       <Header />
       <Nav />
-      <Outlet context={[apiFetch, apiPut]}/>
+      <Outlet context={[apiFetch, apiPut, apiDelete, apiPost]}/>
       <Footer />
     </div>
   )
