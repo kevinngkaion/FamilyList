@@ -79,6 +79,7 @@ async def update_list(id, data):
             return document
         else:
             update_operation = {"$set": {"items.$[elem]": dict(data)}}
+            array_filters = [{"elem.name": data.name}]
     elif isinstance(data, ListNameUpdate):
         update_operation = {"$set": {"name": data.name}}
     pprint(await collection.update_one(filter_criteria, update_operation, array_filters=array_filters))
