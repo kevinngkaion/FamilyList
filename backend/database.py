@@ -65,20 +65,20 @@ async def update_list(id, data):
         data.items = updated_items
         update_operation = {"$set": dict(data)}
     elif isinstance(data, Item):
-        filter_criteria = {"_id": obj_id,
+        count_filter_criteria = {"_id": obj_id,
                        "items": {
                            "$elemMatch": {"name": data.name}
                        }}
-        item_exists = await collection.count_documents(filter=filter_criteria)
+        item_exists = await collection.count_documents(filter=count_filter_criteria)
         if not item_exists:
             grouplist = await collection.find_one({"_id": obj_id})
             grouplist['items'].append(dict(data))
             update_operation = {"$set": dict(grouplist)}
-            await collection.update_one({"_id": obj_id}, update_operation)
-            document = await collection.find_one({"_id": obj_id})
+            await collection.update_one(filter_criteria, update_operation)
+            document = await collection.find_one(filter_criteria)
             return document
         else:
-            update_operation = {"$set": {"item"}}
+            update_operation = {"$set": {"items.$[elem]": dict(data)}}
     elif isinstance(data, ListNameUpdate):
         update_operation = {"$set": {"name": data.name}}
     pprint(await collection.update_one(filter_criteria, update_operation, array_filters=array_filters))
