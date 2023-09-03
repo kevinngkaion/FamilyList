@@ -23,12 +23,12 @@ async def fetch_all(collection):
     documents = []
     cursor = database[collection].find({})
     async for document in cursor:
-        # if collection == "user":
-        #     document = User(**document)
+        if collection == "user":
+            document = User(**document)
         # elif collection == "grouplist":
         #     document = GroupList(**document)
-        # elif collection == "group":
-        #     document = Group(**document)
+        elif collection == "group":
+            document = Group(**document)
         documents.append(document)
     return documents
 
